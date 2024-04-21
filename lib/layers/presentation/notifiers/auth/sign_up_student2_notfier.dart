@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hac/layers/data/http_source.dart';
 import 'package:hac/layers/data/models/caf.dart';
 import 'package:hac/layers/data/models/fac.dart';
 import 'package:hac/layers/data/models/group.dart';
+import 'package:hac/layers/data/models/skill.dart';
 import 'package:hac/layers/data/models/vus.dart';
 import 'package:hac/layers/presentation/pages/student/main_student.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,10 +18,12 @@ class SignUpStudent2Notifier extends ChangeNotifier {
   String fac = "";
   String caf = "";
   String group = "";
+  String skill = "";
   int student_id = 0;
   int group_id = 0;
   List<String> sexList = ["мужской", "женский"];
   List<Vus> vusList = [];
+  List<Skill> skillList = [];
   List<Fac> facList = [];
   List<Caf> cafList = [];
   List<Group> groupList = [];
@@ -34,8 +39,12 @@ class SignUpStudent2Notifier extends ChangeNotifier {
   void _setup() async{
     Api api = Api();
     final vus = await api.getAllUniversities();
+    skillList  = await api.getAllSkills();
     for(int i = 0; i < vus.universities.length; i++){
       vusList.add(Vus.fromMap(vus.universities[i]));
+    }
+    for(int i = 0; i < skillList.length; i++){
+     skillList[i].name  = utf8.decode(skillList[i].name.runes.toList());
     }
     notifyListeners();
   }
@@ -85,11 +94,17 @@ class SignUpStudent2Notifier extends ChangeNotifier {
     try{
       Api api = Api();
     const storage = FlutterSecureStorage();
+    int skill_id = 0;
+    for(int i = 0; i < skillList.length;i++){
+      if(skillList[i].name == skill){
+        skill_id = skillList[i].id;
+      }
+    }
     final token = await storage.read(key: "token");
-    api.patchStudent(student_id, token!,  int.parse(age), sex, '',group_id,);
+    api.patchStudent(student_id, token!,  int.parse(age), sex, '',group_id,skill_id);
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       await sharedPreferences.setBool('session', true);
-      Navigator.of(context).push(MaterialPageRoute(builder: ((context) => MainStudent())));
+      Navigator.of(context).push(MaterialPageRoute(builder: ((context) => MainStudent(selectIndex: 0,))));
     }
     catch(e){
       debugPrint(e.toString());

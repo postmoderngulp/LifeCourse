@@ -7,4 +7,6 @@ class EventInfoStudentNotifier extends ChangeNotifier {
     isLike = !isLike;
     notifyListeners();
   }
+
+  
 }

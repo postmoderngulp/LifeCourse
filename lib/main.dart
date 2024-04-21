@@ -24,7 +24,7 @@ void main() async{
         title: 'Life Course',
         theme: ThemeData(
         ),
-        home:  isSession ? MainStudent() : const ChooseMain(),
+        home:  isSession ? MainStudent(selectIndex: 0,) : const ChooseMain(),
       ),
     ));
 }

@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hac/layers/presentation/notifiers/student/profile_notifier.dart';
 import 'package:hac/layers/presentation/pages/student/create_event_student.dart';
 import 'package:hac/layers/presentation/pages/student/event_info.dart';
+import 'package:hac/layers/presentation/pages/student/faculty_student.dart';
+import 'package:hac/layers/presentation/pages/student/group.dart';
 import 'package:hac/layers/presentation/pages/student/student_redact.dart';
 import 'package:hac/layers/presentation/style/colors.dart';
 import 'package:hac/layers/presentation/style/fontstyle.dart';
@@ -47,6 +50,7 @@ class _SubProfileStudentState extends State<SubProfileStudent> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<ProfileNotifier>();
     return Container( 
       color: Colors.white, 
       child: SafeArea(child: Scaffold( 
@@ -86,9 +90,12 @@ class _SubProfileStudentState extends State<SubProfileStudent> with TickerProvid
                   ),
                 ),
                 SizedBox(height: 15.h,),
-                 Center(child: Text('Катя Клуша',style: FontStylization.title,)),
+                 Center(child: Text(notifier.profile != null ? '${utf8.decode(notifier.profile!.last_name.runes
+                              .toList())} ${utf8.decode(notifier.profile!.first_name.runes
+                              .toList())} ${utf8.decode(notifier.profile!.second_name.runes
+                              .toList())}' : '',style: FontStylization.littleTitle,)),
                 SizedBox(height: 7.h,),
-                 Center(child: Text('Оренбургский государственный университет',style: FontStylization.ratingStyle,)),
+                 Center(child: Text(notifier.university,style: FontStylization.ratingStyle,)),
                 SizedBox(height: 29.h,),
                 TabBar(
                     dividerColor: Colors.transparent,
@@ -106,7 +113,6 @@ class _SubProfileStudentState extends State<SubProfileStudent> with TickerProvid
                     tabs: const [
                       Tab(
                         text: "Обо мне",
-                        
                       ),
                       Tab(
                         text: "Публикации",
@@ -168,6 +174,7 @@ class AboutMe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<ProfileNotifier>();
     return Padding(
       padding:  EdgeInsets.symmetric(horizontal: 26.w),
       child: SingleChildScrollView(
@@ -189,19 +196,43 @@ class AboutMe extends StatelessWidget {
                                  SizedBox(height: 17.h,),
                                   Text('Обо мне',style:FontStylization.titleInfo ,),
                                   SizedBox(height: 17.h,),
+                                  Text(    notifier.about),
+                                  SizedBox(height: 17.h,),
+                                  Text('Навыки',style:FontStylization.titleInfo ,),
+                                  SizedBox(height: 17.h,),
+                                   notifier.skill == null ? const SizedBox() : Wrap(
+                  children: List.generate(1, (index) =>  Padding(
+                    padding:  EdgeInsets.only(right: 13.w,bottom: 10.h),
+                    child: Container(
+                        height: 30.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(46),
+                          color: MyColors.primary100,
+                              
+                        ),
+                        child: Center(child: Text(utf8.decode(notifier.skill!.name.runes.toList()),style: FontStylization.typeText,)),
+                      ),
+                  ),),
+                ),
+                                  SizedBox(height: 17.h,),
+                                  
                                   const Text('Enjoy your favorite dishe and a lovely your friends and family and have a great time. Food from local food trucks will be available for purchase.'),
                                   SizedBox(height: 17.h,),
                                    Text('Факультет',style:FontStylization.titleInfo ,),
                                   SizedBox(height: 17.h,),
-                                   Text('Архитектурно-строительный факультет',style: FontStylization.littleMainTxt,),
+                                   GestureDetector(
+                                    onTap: () =>  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const StudentFaculty())),
+                                    child: Text('${notifier.faculty}',style: FontStylization.littleMainTxt,)),
                                   SizedBox(height: 17.h,),
                                     Text('Кафедра',style:FontStylization.titleInfo ,),
                                   SizedBox(height: 17.h,),
-                                   Text('Кафедра строительных конструкций',style: FontStylization.littleMainTxt,),
+                                   Text('${notifier.department}',style: FontStylization.littleMainTxt,),
                                   SizedBox(height: 17.h,),
-                                   Text('Группа',style:FontStylization.titleInfo ,),
+                                    Text('Группа',style:FontStylization.titleInfo ),
                                   SizedBox(height: 17.h,),
-                                   Text('23Стр(б)-3',style: FontStylization.littleMainTxt,),
+                                   GestureDetector(
+                                    onTap:  () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const GroupStudent())),
+                                    child: Text('${notifier.group}',style: FontStylization.littleMainTxt,)),
                                   SizedBox(height: 19.h,),
                                   const LogOutButton()
                             ],

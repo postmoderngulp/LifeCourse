@@ -4,15 +4,20 @@ import 'dart:convert';
 class Fac {
   int id;
   String name;
+  String description;
   Fac({
     required this.id,
     required this.name,
+    required this.description,
   });
+
+
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'description': description,
     };
   }
 
@@ -20,6 +25,7 @@ class Fac {
     return Fac(
       id: map['id'] as int,
       name: map['name'] as String,
+      description: map['description'] as String,
     );
   }
 

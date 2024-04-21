@@ -30,7 +30,7 @@ class SignInNotifier extends ChangeNotifier {
       await storage.write(key: "token", value: token.token);
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       await sharedPreferences.setBool('session', true);
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainStudent()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainStudent(selectIndex: 0,)));
     }catch(e) {
       print(e.toString());
     }

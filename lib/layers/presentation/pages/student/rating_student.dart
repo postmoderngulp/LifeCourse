@@ -1,24 +1,25 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hac/layers/presentation/notifiers/student/main_screen_student_notifier.dart';
+import 'package:hac/layers/data/models/filter.dart';
+import 'package:hac/layers/presentation/notifiers/student/filter_rating_notifier.dart';
 import 'package:hac/layers/presentation/notifiers/student/rating_students_notifier.dart';
 import 'package:hac/layers/presentation/style/colors.dart';
 import 'package:hac/layers/presentation/style/fontstyle.dart';
 import 'package:provider/provider.dart';
 
 class RatingStudent extends StatelessWidget {
-  const RatingStudent({super.key});
+   RatingStudent({super.key});
+
+  Filter? filter;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(create: (context) => RatingStudentsNotifier(),child: const SubRatingStudents(),);
   }
 }
-
-
-
 
 class SubRatingStudents extends StatelessWidget {
   const SubRatingStudents({super.key});
@@ -55,8 +56,9 @@ class Rating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<RatingStudentsNotifier>();
     return ListView.builder(
-      itemCount: 10,
+      itemCount: notifier.ratings.length,
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) => Padding(
@@ -72,6 +74,7 @@ class RatingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<RatingStudentsNotifier>();
     return Container(
       decoration: BoxDecoration(border: Border.all(color: MyColors.neutral400)),
       width: MediaQuery.of(context).size.width.w,
@@ -82,7 +85,7 @@ class RatingItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('${index+1} КЛУША КАТЯ СЕРГЕЕВНА',style: FontStylization.littleBlackTxt,),
+                Text('${index+1} ${notifier.ratings[index].name}',style: FontStylization.littleBlackTxt,),
                 const Spacer(),
                 Padding(
                   padding:  EdgeInsets.only( top: 12.h),
@@ -104,13 +107,13 @@ class RatingItem extends StatelessWidget {
              SizedBox(height: 2.5.h,),
              Row(
               children: [
-                SvgPicture.asset('assets/image/star.svg'),
+                SvgPicture.asset('assets/image/star.svg'),  
                 SizedBox(width: 5.w,),
-                Text('28 звездочек',style: FontStylization.ratingStudentStyle,)
+                Text('${notifier.ratings[index].stars} звездочек',style: FontStylization.ratingStudentStyle,)
               ],
              ),
              SizedBox(height: 15.h,),
-             Text('Оренбургский государственный университет',style: FontStylization.vusStyle,),
+             Text("",style: FontStylization.vusStyle,),
              SizedBox(height: 15.h,),
           ],
         ),
@@ -148,8 +151,49 @@ class FilterField extends StatelessWidget {
               context: context,
               builder: (BuildContext context) {
                 return ChangeNotifierProvider(
-                  create: (context) => RatingStudentsNotifier(),
-                  child: Container(
+                  create: (context) => FilterStudentRatingNotifier(),
+                  child: const Banner()
+                );
+              },
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(right: 16.w),
+              child: SvgPicture.asset(
+                "assets/image/filter.svg",
+                width: 22.w,
+                height: 22.h,
+              ),
+            ),
+          ),
+          keyboardType: TextInputType.emailAddress,
+          onEditingComplete: () => FocusScope.of(context).nextFocus(),
+          onChanged: (value) {
+            notifier.nickname = value;
+            notifier.searchProfile(value,notifier.students);
+          },
+          placeholder: "Фильтровать",
+          placeholderStyle: FontStylization.subTitleSora,
+          decoration: BoxDecoration(
+            border: Border.all(color: MyColors.neutral200),
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class Banner extends StatelessWidget {
+  const Banner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Container(
                      decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -212,33 +256,7 @@ class FilterField extends StatelessWidget {
           ),
                 ],
               ),
-                  )
-                );
-              },
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(right: 16.w),
-              child: SvgPicture.asset(
-                "assets/image/filter.svg",
-                width: 22.w,
-                height: 22.h,
-              ),
-            ),
-          ),
-          keyboardType: TextInputType.emailAddress,
-          onEditingComplete: () => FocusScope.of(context).nextFocus(),
-          onChanged: (value) {},
-          placeholder: "Фильтровать",
-          placeholderStyle: FontStylization.subTitleSora,
-          decoration: BoxDecoration(
-            border: Border.all(color: MyColors.neutral200),
-            color: Colors.white,
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-          ),
-          
-        ),
-      ),
-    );
+                  );
   }
 }
 
@@ -248,11 +266,15 @@ class AcceptButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     return Center(
       child: SizedBox(
         width: 183.w,
         height: 46.h,
-        child: ElevatedButton(onPressed: () => null,style: ButtonStyle(backgroundColor: const MaterialStatePropertyAll(MyColors.primary700),shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(5)))), child: Text('Принять',style: FontStylization.buttonTxtStyle,),)),
+        child: ElevatedButton(onPressed: () => notifier.save(context),style: ButtonStyle(backgroundColor:
+         const MaterialStatePropertyAll(MyColors.primary700),
+         shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(5)))), 
+         child: Text('Принять',style: FontStylization.buttonTxtStyle,),)),
     );
   }
 }
@@ -262,24 +284,31 @@ class DropButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     return Center(
       child: SizedBox(
         width: 131.w,
         height: 46.h,
-        child: ElevatedButton(onPressed: () {},style: ButtonStyle(backgroundColor: const MaterialStatePropertyAll(Colors.white),shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(5),side: const BorderSide(color: MyColors.primary700)))), child: Text('Сбросить',style: FontStylization.activeButtonTxtStyle,),)),
+        child: ElevatedButton(onPressed: () => notifier.dropFilter(context),style: ButtonStyle(backgroundColor: const MaterialStatePropertyAll(Colors.white),shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(5),side: const BorderSide(color: MyColors.primary700)))), child: Text('Сбросить',style: FontStylization.activeButtonTxtStyle,),)),
     );
   }
 }
 
 
-class CityField extends StatelessWidget {
+class CityField extends StatefulWidget {
   const CityField({super.key});
- 
+
+  @override
+  State<CityField> createState() => _CityFieldState();
+}
+
+class _CityFieldState extends State<CityField> {
+  
+  final dropValue = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
-    final notifier = context.watch<RatingStudentsNotifier>();
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     
-    final dropValue = ValueNotifier('');
     return Center(
       child: SizedBox(
         width: 320.w,
@@ -336,14 +365,19 @@ class CityField extends StatelessWidget {
 }
 
 
-class VusField extends StatelessWidget {
+class VusField extends StatefulWidget {
   const VusField({super.key});
- 
+
+  @override
+  State<VusField> createState() => _VusFieldState();
+}
+
+class _VusFieldState extends State<VusField> {
+  final dropValue = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
-    final notifier = context.watch<RatingStudentsNotifier>();
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     
-    final dropValue = ValueNotifier('');
     return Center(
       child: SizedBox(
         width: 320.w,
@@ -384,11 +418,16 @@ class VusField extends StatelessWidget {
                   onChanged: (choice) {
                     dropValue.value = choice.toString();
                     notifier.vus = choice as String;
+                    for(int i = 0; i< notifier.vusList.length;i++){
+                      if(notifier.vusList[i].name == notifier.vus){
+                        notifier.getFac(notifier.vusList[i].id);
+                      }
+                    }
                   },
                   items: 
-                      notifier.vuses.map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
+                      notifier.vusList.map((e) => DropdownMenuItem(
+                            value: e.name,
+                            child: Text(e.name),
                           ))
                       .toList(),
                 );
@@ -399,14 +438,20 @@ class VusField extends StatelessWidget {
   }
 }
 
-class FacField extends StatelessWidget {
+class FacField extends StatefulWidget {
   const FacField({super.key});
- 
+
+  @override
+  State<FacField> createState() => _FacFieldState();
+}
+
+class _FacFieldState extends State<FacField> {
+  final dropValue = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
-    final notifier = context.watch<RatingStudentsNotifier>();
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     
-    final dropValue = ValueNotifier('');
+    
     return Center(
       child: SizedBox(
         width: 320.w,
@@ -447,11 +492,16 @@ class FacField extends StatelessWidget {
                   onChanged: (choice) {
                     dropValue.value = choice.toString();
                     notifier.fac = choice as String;
+                    for(int i = 0; i< notifier.vusList.length;i++){
+                      if(notifier.vusList[i].name == notifier.vus){
+                        notifier.getCaf(notifier.vusList[i].id);
+                      }
+                    }
                   },
                   items: 
-                      notifier.facs.map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
+                      notifier.facList.map((e) => DropdownMenuItem(
+                            value: e.name,
+                            child: Text(e.name),
                           ))
                       .toList(),
                 );
@@ -464,14 +514,20 @@ class FacField extends StatelessWidget {
 
 
 
-class CafField extends StatelessWidget {
+class CafField extends StatefulWidget {
   const CafField({super.key});
- 
+
+  @override
+  State<CafField> createState() => _CafFieldState();
+}
+
+class _CafFieldState extends State<CafField> {
+  final dropValue = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
-    final notifier = context.watch<RatingStudentsNotifier>();
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     
-    final dropValue = ValueNotifier('');
+    
     return Center(
       child: SizedBox(
         width: 320.w,
@@ -512,11 +568,16 @@ class CafField extends StatelessWidget {
                   onChanged: (choice) {
                     dropValue.value = choice.toString();
                     notifier.caf = choice as String;
+                    for(int i = 0; i< notifier.vusList.length;i++){
+                      if(notifier.vusList[i].name == notifier.vus){
+                        notifier.getGroup(notifier.vusList[i].id);
+                      }
+                    }
                   },
                   items: 
-                      notifier.cafs.map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
+                      notifier.cafList.map((e) => DropdownMenuItem(
+                            value: e.name,
+                            child: Text(e.name),
                           ))
                       .toList(),
                 );
@@ -527,14 +588,20 @@ class CafField extends StatelessWidget {
   }
 }
 
-class GroupField extends StatelessWidget {
+class GroupField extends StatefulWidget {
   const GroupField({super.key});
- 
+
+  @override
+  State<GroupField> createState() => _GroupFieldState();
+}
+
+class _GroupFieldState extends State<GroupField> {
+  final dropValue = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
-    final notifier = context.watch<RatingStudentsNotifier>();
+    final notifier = context.watch<FilterStudentRatingNotifier>();
     
-    final dropValue = ValueNotifier('');
+    
     return Center(
       child: SizedBox(
         width: 320.w,
@@ -577,9 +644,9 @@ class GroupField extends StatelessWidget {
                     notifier.group = choice as String;
                   },
                   items: 
-                      notifier.groups.map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
+                      notifier.groupList.map((e) => DropdownMenuItem(
+                            value: e.name,
+                            child: Text(e.name),
                           ))
                       .toList(),
                 );

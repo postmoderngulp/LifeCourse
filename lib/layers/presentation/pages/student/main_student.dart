@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hac/layers/presentation/pages/student/events_student.dart';
@@ -8,16 +9,24 @@ import 'package:hac/layers/presentation/style/colors.dart';
 
 class MainStudent extends StatefulWidget {
   int selectIndex = 0;
-   MainStudent({super.key});
+  MainStudent({
+    Key? key,
+    required this.selectIndex,
+  }) : super(key: key);
 
   @override
+  // ignore: no_logic_in_create_state
   State<MainStudent> createState() => _MainStudentState();
 }
 
 class _MainStudentState extends State<MainStudent> {
+
+  
+
+  
   final List<Widget> _tabs = [
     const MainScreenStudent(),
-    const RatingStudent(),
+    RatingStudent(),
     const EventsStudent(),
     const ProfileStudent()
   ];

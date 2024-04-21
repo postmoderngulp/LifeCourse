@@ -9,6 +9,12 @@ abstract class FontStylization{
       color: MyColors.neutral300, fontFamily: "San Francisco", fontSize: 14.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.none);
       static TextStyle inputfieldStyle = TextStyle(
       color: MyColors.neutral1000, fontFamily: "San Francisco", fontSize: 14.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.none);
+      static TextStyle addToMc = TextStyle(
+      color: Colors.white, fontFamily: "San Francisco", fontSize: 10.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.none);
+      static TextStyle addToMcActive = TextStyle(
+      color: MyColors.primary700, fontFamily: "San Francisco", fontSize: 10.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.none);
+      static TextStyle addToMcBig = TextStyle(
+      color: Colors.white, fontFamily: "San Francisco", fontSize: 14.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.none);
       static TextStyle ratingStyle = TextStyle(
       color: MyColors.neutral500, fontFamily: "San Francisco", fontSize: 14.sp,fontWeight: FontWeight.w400,decoration: TextDecoration.none);
       static TextStyle littleStyle = TextStyle(
@@ -43,6 +49,8 @@ abstract class FontStylization{
       color: MyColors.primary700, fontFamily: "San Francisco", fontSize: 16.sp,fontWeight: FontWeight.w500);
       static TextStyle second_text = TextStyle(
       color: MyColors.neutral300, fontFamily: "GeometriaLight", fontSize: 12.sp);
+      static TextStyle mcStyle = TextStyle(
+      color: MyColors.neutral1000, fontFamily: "Geometria", fontSize: 12.sp,fontWeight: FontWeight.w500);
       static TextStyle titleInfo = TextStyle(
       color: MyColors.neutral1000, fontFamily: "San Francisco", fontSize: 16.sp,fontWeight: FontWeight.w500);
 

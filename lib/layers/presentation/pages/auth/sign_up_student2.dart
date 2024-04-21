@@ -1,14 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
 import 'package:hac/layers/presentation/notifiers/auth/sign_up_student2_notfier.dart';
 import 'package:hac/layers/presentation/pages/auth/sign_in.dart';
-import 'package:hac/layers/presentation/pages/student/main_student.dart';
 import 'package:hac/layers/presentation/style/colors.dart';
 import 'package:hac/layers/presentation/style/fontstyle.dart';
 
@@ -54,6 +51,8 @@ class SubSignUpStudent2 extends StatelessWidget {
               const AgeField(),
               SizedBox(height: 20.h,),
               const SexField(),
+              SizedBox(height: 20.h,),
+              const SkillsField(),
               SizedBox(height: 20.h,),
               VusField(),
               SizedBox(height: 20.h,),
@@ -461,6 +460,79 @@ class _GroupFieldState extends State<GroupField> {
 
 
 
+
+
+class SkillsField extends StatefulWidget {
+  const SkillsField({super.key});
+
+  @override
+  State<SkillsField> createState() => _SkillsFieldState();
+}
+
+class _SkillsFieldState extends State<SkillsField> {
+  final dropValue = ValueNotifier('');
+  @override
+  Widget build(BuildContext context) {
+    
+    final notifier = context.watch<SignUpStudent2Notifier>();
+    return Center(
+      child: SizedBox(
+        width: 320.w,
+        height: 50.h,
+        child: Material(
+          child: ValueListenableBuilder(
+              valueListenable: dropValue,
+              builder: (BuildContext context, String value, _) {
+                return DropdownButtonFormField(
+                  decoration: InputDecoration(
+                    filled: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 15.0),
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: MyColors.neutral500, width: 1)),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: MyColors.neutral500, width: 1)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: MyColors.neutral500, width: 1)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: MyColors.neutral500, width: 1)),
+                  ),
+                  isExpanded: true,
+                  hint: Padding(
+                    padding: EdgeInsets.only(left: 10.w),
+                    child: Text(
+                      'Навыки',
+                      style: FontStylization.fieldStyle,
+                    ),
+                  ),
+                  icon: const Icon(Icons.keyboard_arrow_down_sharp),
+                  value: (value.isEmpty) ? null : value,
+                  onChanged: (choice) {
+                    dropValue.value = choice.toString();
+                    notifier.skill = choice as String;
+                  },
+                  items: 
+                      notifier.skillList.map((e) => DropdownMenuItem(
+                            value: e.name,
+                            child: Text(e.name),
+                          ))
+                      .toList(),
+                );
+              }),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
 class AgeField extends StatelessWidget {
   const AgeField({super.key});
 
@@ -472,6 +544,7 @@ class AgeField extends StatelessWidget {
         width: 320.w,
         height: 50.h,
         child: TextFormField(
+          keyboardType: TextInputType.number,
           onChanged: (value) {
             notifier.age = value;
           } ,
@@ -492,7 +565,7 @@ class AgeField extends StatelessWidget {
             border: OutlineInputBorder(
                 borderSide: const BorderSide(color: MyColors.neutral500, width: 1),
                 borderRadius: BorderRadius.circular(10.0)),
-            hintText: "ФИО",
+            hintText: "Возраст",
             hintStyle: FontStylization.fieldStyle,
           ),
         ),
